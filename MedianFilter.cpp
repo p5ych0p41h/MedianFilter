@@ -36,54 +36,53 @@ void MedianFilter::filtering(int n){
 	list<byte> termsListBlue;
 	init();
 
-	for (int i = 0; i <= image->Width - n; i++){
-		for (int j = 0; j <= image->Height - n; j++){
-			for (int x = i; x <= i + (n-1); x++){
-				for (int y = j; y <= j + (n-1); y++){
-					termListRed.push_back(imageRed[x][y]);
-					termListGreen.push_back(imageGreen[x][y]);
-					termListBlue.push_back(imageBlue[x][y]);
+	for (int i = 0; i <= image->Width - n; i++) {
+		for (int j = 0; j <= image->Height - n; j++) {
+			for (int x = i; x <= i + (n - 1); x++) {
+				for (int y = j; y <= j + (n - 1); y++) {
+					termsListRed.push_back(imageRed[x][y]);
+					termsListGreen.push_back(imageGreen[x][y]);
+					termsListBlue.push_back(imageBlue[x][y]);
 				}
 			}
+
+			byte* termRed = new byte[termsListRed.size()];
+			byte* termGreen = new byte[termsListGreen.size()];
+			byte* termBlue = new byte[termsListBlue.size()];
+
+			int k = 0;
+			for (byte const& i : termsListRed)
+				termRed[k++] = i;
+			k = 0;
+			for (byte const& i : termsListGreen)
+				termGreen[k++] = i;
+			k = 0;
+			for (byte const& i : termsListBlue)
+				termBlue[k++] = i;
+
+			sort(termRed, termRed + termsListRed.size());
+			sort(termGreen, termGreen + termsListGreen.size());
+			sort(termBlue, termBlue + termsListBlue.size());
+
+			reverse(termRed, termRed + termsListRed.size());
+			reverse(termGreen, termGreen + termsListGreen.size());
+			reverse(termBlue, termBlue + termsListBlue.size());
+
+			termsListRed.clear();
+			termsListGreen.clear();
+			termsListBlue.clear();
+
+			byte colorRed = termRed[(n * n) / 2];
+			byte colorGreen = termGreen[(n * n) / 2];
+			byte colorBlue = termBlue[(n * n) / 2];
+
+			delete[] termRed;
+			delete[] termGreen;
+			delete[] termBlue;
+
+			image->SetPixel(i + (n / 2), j + (n / 2), Color::FromArgb(colorRed, colorGreen, colorBlue));
 		}
 	}
-
-	byte* termRed = new byte[termsListRed.size()];
-	byte* termGreen = new byte[termsListGreen.size()];
-	byte* termBlue = new byte[termsListBlue.size()];
-
-	int k = 0;
-	for(byte const& i: termsListRed)
-		termRed[k++] = i;
-	k = 0;
-	for(byte const& i: termsListGreen)
-		termGreen[k++] = i;
-	k = 0;
-	for(byte const& i: termsListBlue)
-		termBlue[k++] = i;
-
-	sort(termRed, termRed + termsListRed.size());
-	sort(termGreen, termGreen + termsListGreen.size());
-	sort(termBlue, termBlue + termsListBlue.size());
-
-	reverse(termRed, termRed + termsListRed.size());
-	reverse(termGreen, termGreen + termsListGreen.size());
-	reverse(termBlue, termBlue + termsListBlue.size());
-
-	termsListRed.clear();
-	termsListGreen.clear();
-	termsListBlue.clear();
-
-	byte colorRed = termRed[(n*n)/2];
-	byte colorGreen = termGreen[(n*n)/2];
-	byte colorBlue = termBlue[(n*n)/2];
-
-	delete[] termRed;
-	delete[] termGreen;
-	delete[] termBlue;
-
-	image->SetPixel(i + (n/2), j + (n/2),
-		Color::FromArgb(colorRed, colorGreen, colorBlue));
 }
 
 Bitmap^ MedianFilter::getImage(){
